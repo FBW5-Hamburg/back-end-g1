@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+  <head>
+    <%- include('partials/header') %>
+  </head>
+  <body>
+    <%- include('partials/adminHeader') %>
+    <!-- #header -->
+
+    <!-- start banner Area -->
+    <section class="about-banner relative">
+      <div class="overlay overlay-bg"></div>
+      <div class="container">
+        <div class="row d-flex align-items-center justify-content-center">
+          <div class="about-content col-lg-12">
+            <h1 class="text-white">
+              Add Meal
+            </h1>
+            <p class="text-white link-nav">
+              <a href="/admin">Home </a>
+              <span class="lnr lnr-arrow-right"></span>
+              <a href="/admin/menu"> Menu</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End banner Area -->
+
+    <!-- Start menu-area Area -->
+    <section
+      class="menu-area section-gap"
+      id="menu"
+      style="padding-bottom: 0px;"
+    >
+      <div class="container">
+        <div class="row d-flex justify-content-center">
+          <div class="menu-content pb-40 col-lg-8">
+            <div class="title text-center">
+              <h1 class="mb-10" id="addMealHeadline">
+                Here you can add your meals to the menu.
+              </h1>
+              <p id="addMealMessage">
+                Who are in extremely love with eco friendly system.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End menu-area Area -->
+    <!-- Start add meal area -->
+    <section class="menu-area" style="padding-bottom: 100px;">
+      <div class="container">
+        <form
+          class="form-wrap text-center"
+          action="#"
+          id="restaurantId"
+          restaurantId="<%=restaurantId%>"
+        >
+          <input
+            type="text"
+            class="form-control mb-4"
+            id="addMealTitle"
+            name="addMealTitle"
+            placeholder="Meal Title"
+            onfocus="this.placeholder = ''"
+            onblur="this.placeholder = 'Meal Title'"
+          />
+          <textarea
+            type="te"
+            class="form-control mb-4"
+            id="AddMealDescription"
+            name="AddMealDescription"
+            placeholder="Meal Description"
+            onfocus="this.placeholder = ''"
+            onblur="this.placeholder = 'Meal Description'"
+          ></textarea>
+          <input
+            type="number"
+            class="form-control mb-4"
+            id="addMealNumber"
+            name="addMealNumber"
+            placeholder="Meal Number"
+            onfocus="this.placeholder = ''"
+            onblur="this.placeholder = 'Meal Number'"
+          />
+          <input
+            type="number"
+            class="form-control mb-4"
+            id="addMealPrice"
+            name="addMealPrice"
+            placeholder="Meal Price"
+            onfocus="this.placeholder = ''"
+            onblur="this.placeholder = 'Meal Price'"
+          />
+          <select class="form-control mt-4" id="addMealSelect">
+            <option value="category"> Choose Category</option>
+            <option value="drinks">Drinks</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+          </select>
+
+          <input
+            type="file"
+            class="form-control-file mb-4 mt-5"
+            name="addMealImg"
+            id="addMealImg"
+            placeholder="Upload an image"
+            accept="image/x-png,image/gif,image/jpeg"
+          />
+
+          <button
+            class="btn btn-block bg-dark text-uppercase mt-20 mb-5 text-white"
+            id="addMealBtn"
+            style="border-radius: 3px;"
+          >
+            ADD MEAL
+          </button>
+        </form>
+      </div>
+    </section>
+    <!-- End add meal area -->
+    <!-- start footer Area -->
+    <%- include('partials/footer') %>
+    <!-- End footer Area -->
+
+    <%- include('partials/scripts') %>
+
+    <script>
+      //GET THE BUTTON AND MAKE VALIDATION
+      const addMealBtn = document.querySelector("#addMealBtn");
+      addMealBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const addMealTitle = document.querySelector("#addMealTitle");
+        const AddMealDescription = document.querySelector(
+          "#AddMealDescription"
+        );
+        const addMealNumber = document.querySelector("#addMealNumber");
+        const addMealPrice = document.querySelector("#addMealPrice");
+        const addMealImg = document.querySelector("#addMealImg");
+        const addMealSelect = document.querySelector("#addMealSelect");
+        const restaurantId = document
+          .querySelector("#restaurantId")
+          .getAttribute("restaurantId");
+        let isVerified = {
+          valid: true,
+          msg: "",
+        };
+
+        if (!addMealTitle.value.trim()) {
+          isVerified.valid = false;
+          isVerified.msg += "Please feel out title<br>";
+        }
+        if (!addMealPrice.value.trim()) {
+          isVerified.valid = false;
+          isVerified.msg += "Please feel out title<br>";
+        }
+        if (!AddMealDescription.value.trim()) {
+          isVerified.valid = false;
+          isVerified.msg += "Please feel out description<br>";
+        }
+
+        if (
+          addMealSelect.options[addMealSelect.selectedIndex].value ===
+          "category"
+        ) {
+          isVerified.valid = false;
+          isVerified.msg += "Please choose a category<br>";
+        }
+
+        if (!isVerified.valid) {
+          errorMessage(isVerified.msg);
+        } else {
+          const fd = new FormData();
+          fd.append("mealTitle", addMealTitle.value);
+          fd.append("mealDiscription", AddMealDescription.value);
+          fd.append("mealNumber", addMealNumber.value);
+          fd.append("mealPrice", addMealPrice.value);
+          fd.append(
+            "mealCategory",
+            addMealSelect.options[addMealSelect.selectedIndex].value
+          );
+
+          if (addMealImg.files.length === 1) {
+            fd.append("mealImg", addMealImg.files[0]);
+          }
+
+          fd.append("restaurantId", restaurantId);
+          fetch("/admin/addMeal", {
+            method: "post",
+            body: fd,
+          })
+            .then((response) => {
+              if (response.status === 200) {
+                successOrNot("SUCCESFULL ADDED", "bg-success");
+                addMealTitle.value = "";
+                AddMealDescription.value = "";
+                addMealNumber.value = "";
+                addMealPrice.value = "";
+                addMealImg.value = "";
+                addMealSelect.selectedIndex = "0";
+              } else {
+                successOrNot("SOMETHING GOES WRONG", "bg-danger");
+              }
+            })
+            .catch((err) => console.log(err));
+        }
+      });
+
+      //////////////////////////
+      //FETCH THE REGISTER DATA
+
+      ///////////////////
+      //ERROR MESSGAE fn
+      function errorMessage(message) {
+        const addMealHeadline = document.querySelector("#addMealHeadline");
+        const addMealMessage = document.querySelector("#addMealMessage");
+        addMealHeadline.innerHTML = "Something goes wrong check the text below";
+        addMealMessage.innerHTML = message;
+        setTimeout(() => {
+          addMealHeadline.innerHTML = "Here you can create your meals.";
+          addMealMessage.innerHTML =
+            "Who are in extremely love with eco friendly system.";
+        }, 6000);
+      }
+
+      function successOrNot(msg, color) {
+        addMealBtn.classList.remove("bg-dark");
+        addMealBtn.classList.add(color);
+        addMealBtn.innerText = msg;
+        setTimeout(() => {
+          addMealBtn.classList.add("bg-dark");
+          addMealBtn.classList.remove(color);
+          addMealBtn.innerText = "ADD MEAL";
+        }, 2000);
+      }
+    </script>
+  </body>
+</html>

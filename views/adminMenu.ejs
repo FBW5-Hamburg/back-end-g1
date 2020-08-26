@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zxx" class="no-js">
+  <head>
+    <%- include('partials/header') %>
+  </head>
+  <body>
+    <%- include('partials/adminHeader') %>
+    <!-- #header -->
+
+    <!-- start banner Area -->
+    <section class="about-banner relative">
+      <div class="overlay overlay-bg"></div>
+      <div class="container">
+        <div class="row d-flex align-items-center justify-content-center">
+          <div class="about-content col-lg-12">
+            <h1 class="text-white">
+              Menus
+            </h1>
+            <p class="text-white link-nav">
+              <a href="/admin">Home </a>
+              <span class="lnr lnr-arrow-right"></span>
+              <a href="/admin/addMeal"> Add Meal</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End banner Area -->
+
+    <!-- Start menu-area Area -->
+    <section class="menu-area section-gap" id="menu">
+      <div class="container">
+        <div class="row d-flex justify-content-center">
+          <div class="menu-content pb-70 col-lg-8">
+            <div class="title text-center">
+              <h1 class="mb-10">Here you can see your current menu.</h1>
+              <p>Who are in extremely love with eco friendly system.</p>
+            </div>
+          </div>
+        </div>
+
+        <ul class="filter-wrap filters col-lg-12 no-padding">
+          <li class="active" data-filter="*">All Menu</li>
+          <li data-filter=".drinks">Drinks</li>
+          <li data-filter=".breakfast">Breakfast</li>
+          <li data-filter=".lunch">Lunch</li>
+          <li data-filter=".dinner">Dinner</li>
+        </ul>
+
+        <div class="filters-content">
+          <div class="row grid">
+            <!-- JSX LOOP TO RENDER MENU -->
+            <% meals.forEach(meal => { %> <% if (meal.img !== '') { %>
+
+            <div class="col-md-6 all <%= meal.category %>">
+              <div class="single-menu">
+                <div class="row">
+                  <div class="col-md-4" style="padding: 0 0 0 0;">
+                    <img
+                      src="<%= meal.img %> "
+                      alt=""
+                      width="100%"
+                      height="150px"
+                      class="rounded"
+                    />
+                  </div>
+                  <div class="col-md-8">
+                    <div class="title-wrap d-flex justify-content-between">
+                      <% if (meal.number !== '') { %>
+                      <h4><%= meal.number %> <%= meal.title %></h4>
+                      <h4 class="price">$<%= meal.price %></h4>
+
+                      <% }else{ %>
+                      <h4><%= meal.title %></h4>
+                      <h4 class="price">$<%= meal.price %></h4>
+
+                      <% } %>
+                    </div>
+                    <p>
+                      <%= meal.description %>
+                    </p>
+                    <a
+                      href="/admin/editMeal/<%-meal.id%>"
+                      class="adminEditMenuBtn"
+                      ><input
+                        class="btn btn-success"
+                        type="button"
+                        value="EDIT"
+                    /></a>
+                    <a href="#" mealid="<%= meal.id%>" class="DeletMealBtn"
+                      ><input
+                        class="btn btn-danger"
+                        type="button"
+                        value="DELETE"
+                    /></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }else{ %>
+            <div class="col-md-6 all <%= meal.category %>">
+              <div class="single-menu">
+                <div class="title-wrap d-flex justify-content-between">
+                  <% if (meal.number !== '') { %>
+                  <h4><%= meal.number %> <%= meal.title %></h4>
+                  <h4 class="price">$<%= meal.price %></h4>
+                  <% }else{ %>
+                  <h4><%= meal.title %></h4>
+                  <h4 class="price">$<%= meal.price %></h4>
+                  <% } %>
+                </div>
+                <p>
+                  <%= meal.description %>
+                </p>
+                <a href="/admin/editMeal/<%-meal.id%>" class="adminEditMenuBtn"
+                  ><input class="btn btn-success" type="button" value="EDIT"
+                /></a>
+                <a href="#" mealid="<%= meal.id%>" class="DeletMealBtn"
+                  ><input class="btn btn-danger" type="button" value="DELETE"
+                /></a>
+              </div>
+              <div></div>
+            </div>
+
+            <% } %> <% }) %>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End menu-area Area -->
+    <div class="modal" tabindex="-1" role="dialog" id="resultModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Delete?</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete?</p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              id="modaldeletMealBtn"
+              data-dismiss="modal"
+              class="btn btn-primary"
+            >
+              DELET
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal end -->
+
+    <!-- start footer Area -->
+    <%- include('partials/footer') %>
+    <!-- End footer Area -->
+
+    <%- include('partials/scripts') %>
+
+    <script>
+      let mealid;
+      const deleteMealBtn = document.querySelectorAll(".DeletMealBtn");
+      deleteMealBtn.forEach((btn) => {
+        //! 2
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+
+          showModal(
+            true,
+            "Delete",
+            "are you sure you want to delet, no way to bring it back ..."
+          );
+          mealid = btn.getAttribute("mealid");
+        });
+      });
+
+      document
+        .querySelector("#modaldeletMealBtn")
+        .addEventListener("click", (e) => {
+          //!4
+          e.preventDefault();
+          // get parentElement to remove it
+          document
+            .querySelector('a[mealid="' + mealid + '"]')
+            .parentElement.parentElement.parentElement.remove();
+          data = {
+            //   it muss be as a object
+            mealid: mealid,
+          };
+          postDtata("/admin/deleteMeal", data)
+            .then((data) => {
+              //hide the delet confirmation modal
+              $("#deletConfirmModal").modal("hide");
+              if (data.status == 200) {
+                if (data == 1) {
+                  showModal(false, "success", "meal is Deleted");
+                } else {
+                  showModal(true, "error", "meal can not be Deleted");
+                }
+              }
+            })
+            .catch((error) => {
+              showModal(true, "error", "error from server");
+            });
+        });
+
+      async function postDtata(url = "", data = "") {
+        // send data to server
+        const response = await fetch(url, {
+          method: "Post",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        return response.json();
+      }
+    </script>
+  </body>
+</html>
